@@ -68,7 +68,7 @@ window.onload = function(){
         updateChart(data[0], data[1])
     }
 
-    var ws = new WebSocket("ws://localhost:80/ws");
+    var ws = new WebSocket("ws://"+window.location.hostname+":80/ws");
     ws.onmessage = function (evt) {
         update(evt.data);
     };
