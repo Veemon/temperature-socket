@@ -19,9 +19,9 @@ class Index(tornado.web.RequestHandler):
 
 class Socket(tornado.websocket.WebSocketHandler):
 
-    _log_path = 'gpu-temps.log'
+    _log_path = '/var/log/gpu-temps.log'
     _sleep_timer = 5
-    _poll_timer = 5
+    _poll_timer = 800
 
     thread = 0
     slept = False
