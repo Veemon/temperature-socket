@@ -55,15 +55,8 @@ window.onload = function(){
         console.log(data)
     }
 
-    function open_socket(){
-        var ws = new WebSocket("ws://localhost:80/ws");
-        ws.onopen = function() {
-           ws.send("Hello, world");
-        };
-        ws.onmessage = function (evt) {
-            update(evt.data);
-        };
-    }
-
-    open_socket();
+    var ws = new WebSocket("ws://localhost:80/ws");
+    ws.onmessage = function (evt) {
+        update(evt.data);
+    };
 }
