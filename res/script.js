@@ -23,8 +23,7 @@ window.onload = function(){
     data = [0, 1, 4, 6]
     var ctx = document.getElementById("chart").getContext('2d');
     data = {
-      labels: ['0', '1', '2', '3',
-                '4', '5', '6'],
+      labels: [],
       datasets: [
           {
               label: "Temperature",
@@ -32,7 +31,7 @@ window.onload = function(){
               strokeColor: "rgba(151,187,205,1)",
               pointColor: "rgba(151,187,205,1)",
               pointStrokeColor: "#fff",
-              data: [28, 48, 40, 19, 86, 27, 90]
+              data: []
           }
       ]
     };
@@ -45,14 +44,28 @@ window.onload = function(){
                     time: {
                         unit: 'month'
                     }
+                }],
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 40,
+                        suggestedMax: 100
+                    }
                 }]
             }
         }
     });
 
+    function updateChart(label, value){
+        chart.data.datasets[0].data.push(value)
+        chart.data.labels.push(label)
+        chart.update()
+    }
+
     // Socket
     function update(data){
-        console.log(data)
+        data = data.split(',');
+        updateGage(data[1])
+        updateChart(data[0], data[1])
     }
 
     var ws = new WebSocket("ws://localhost:80/ws");

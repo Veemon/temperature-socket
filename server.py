@@ -14,11 +14,17 @@ class Index(tornado.web.RequestHandler):
 
 class Socket(tornado.websocket.WebSocketHandler):
 
+    _log_path = 'gpu-temps.log'
     _sleep_timer = 5
     _poll_timer = 1
 
     thread = 0
     slept = False
+
+    def load_data(self):
+        with open(self._log_path) as f:
+            content = f.readlines()
+        return [x.strip() for x in content]
 
     def poll_data(self):
         try:
@@ -28,11 +34,10 @@ class Socket(tornado.websocket.WebSocketHandler):
                 self.slept = True
 
             # Poll Log File
-            data = 'data'
-            print(data)
+            #data = 'data'
 
             # Send Socket Update
-            self.write_message(message=data)
+            #self.write_message(message=data)
 
             # Recurse
             threading.Timer(self._poll_timer, self.poll_data).start()
@@ -41,6 +46,8 @@ class Socket(tornado.websocket.WebSocketHandler):
 
     def open(self):
         print("~ socket opened ~")
+        for package in self.load_data():
+            self.write_message(message=package)
         if self.thread == 0:
             self.thread = threading.Timer(self._poll_timer, self.poll_data)
             self.thread.start()
@@ -62,26 +69,10 @@ class App(tornado.web.Application):
         }
         tornado.web.Application.__init__(self, handlers, **settings)
 
-# def poll_data(slept):
-#     # Sleep For IOLoop Startup
-#     if not slept:
-#         time.sleep(5)
-#
-#     # Poll Log File
-#     data = 'data'
-#     print(data)
-#
-#     # Send Socket Update
-#     tornado.websocket.WebSocketHandler.write_message(message=data)
-#
-#     # Recurse
-#     threading.Timer(1, poll_data, [True]).start()
-
 if __name__ == "__main__":
     try:
         print('started...')
         app = App().listen(80)
-        # poll_data(False)
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         print('...stopped')
